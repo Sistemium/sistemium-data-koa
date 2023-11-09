@@ -3,7 +3,7 @@ import { FULL_RESPONSE_OPTION, OFFSET_HEADER, PAGE_SIZE_HEADER } from 'sistemium
 import qs from 'qs'
 import lo from 'lodash'
 import { queryToFilter, whereToFilter } from './predicates'
-import type { ContextType, KoaModel, RolesFilter } from './types'
+import type { ContextType, KoaModel } from './types'
 
 const { debug } = log('rest:GET')
 export const WHERE_KEY = 'where:'
