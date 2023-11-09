@@ -18,9 +18,7 @@ export default function(model: Model & { rolesFilter?: RolesFilter, normalizeIte
     const query = qs.parse(ctx.query as unknown as string)
     const pageSize = queryOrHeader(ctx, PAGE_SIZE_HEADER) || '10'
     const offset = queryOrHeader(ctx, OFFSET_HEADER) as string
-
     const filters = queryToFilter(query, model.schema)
-
     const where = query[WHERE_KEY]
 
     if (where) {
@@ -64,7 +62,7 @@ export default function(model: Model & { rolesFilter?: RolesFilter, normalizeIte
     const newOffset = headers[OFFSET_HEADER]
 
     if (offset && newOffset) {
-      debug('offsets:', offset, newOffset)
+      debug('offsets:', offset, newOffset, data.length)
       ctx.set(OFFSET_HEADER, newOffset)
     } else if (offset) {
       ctx.set(OFFSET_HEADER, offset)
