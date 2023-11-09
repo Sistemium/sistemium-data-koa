@@ -3,7 +3,7 @@ import { FULL_RESPONSE_OPTION, OFFSET_HEADER, PAGE_SIZE_HEADER } from 'sistemium
 import qs from 'qs'
 import lo from 'lodash'
 import { queryToFilter, whereToFilter } from './predicates'
-import type { ContextType, KoaModel } from './types'
+import type { ContextType, KoaModel, RolesFilter } from './types'
 
 const { debug } = log('rest:GET')
 export const WHERE_KEY = 'where:'
@@ -27,12 +27,11 @@ export default function(model: KoaModel) {
       Object.assign(filters, whereToFilter(jsonWhere, model.schema))
     }
 
-    const { rolesFilter } = model
-    const filterOfRoles = rolesFilter && rolesFilter(ctx.state)
-    const pipeFilter = Array.isArray(filterOfRoles)
+    const rolesFilter = ctx.state.rolesFilter || model.rolesFilter?.call(model, ctx.state)
+    const pipeFilter = Array.isArray(rolesFilter)
 
     const allFilters = lo.filter([
-      !pipeFilter && filterOfRoles,
+      !pipeFilter && rolesFilter,
       Object.keys(filters).length && filters,
       // ...(ctx.state.filters || []),
     ]) as Object[]
@@ -40,7 +39,7 @@ export default function(model: KoaModel) {
     debug('GET', path, allFilters)
     const pipeline = allFilters.map($match => ({ $match }))
     if (pipeFilter) {
-      pipeline.push(...filterOfRoles)
+      pipeline.push(...rolesFilter)
     }
 
     const {

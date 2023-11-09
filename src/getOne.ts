@@ -14,7 +14,7 @@ export default function(model: KoaModel) {
 
     debug(path, id)
 
-    const rolesFilter = model.rolesFilter?.call(model, ctx.state)
+    const rolesFilter = ctx.state.rolesFilter || model.rolesFilter?.call(model, ctx.state)
     const pipe = [{ $match: { id } }]
     if (Array.isArray(rolesFilter)) {
       pipe.push(...rolesFilter)
