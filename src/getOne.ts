@@ -1,10 +1,9 @@
 import log from 'sistemium-debug'
-import type { Model } from 'sistemium-data'
-import type { ContextType, NormalizeItem, RolesFilter } from './types'
+import type { ContextType, KoaModel } from './types'
 
 const { debug } = log('rest:GET')
 
-export default function(model: Model & { rolesFilter?: RolesFilter, normalizeItem: NormalizeItem }) {
+export default function(model: KoaModel) {
 
   return async (ctx: ContextType) => {
 

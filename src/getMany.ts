@@ -1,14 +1,14 @@
 import log from 'sistemium-debug'
-import { FULL_RESPONSE_OPTION, Model, OFFSET_HEADER, PAGE_SIZE_HEADER } from 'sistemium-data'
+import { FULL_RESPONSE_OPTION, OFFSET_HEADER, PAGE_SIZE_HEADER } from 'sistemium-data'
 import qs from 'qs'
 import lo from 'lodash'
 import { queryToFilter, whereToFilter } from './predicates'
-import type { ContextType, NormalizeItem, RolesFilter } from './types'
+import type { ContextType, KoaModel } from './types'
 
 const { debug } = log('rest:GET')
 export const WHERE_KEY = 'where:'
 
-export default function(model: Model & { rolesFilter?: RolesFilter, normalizeItem: NormalizeItem }) {
+export default function(model: KoaModel) {
   return async (ctx: ContextType) => {
 
     const {

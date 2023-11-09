@@ -1,12 +1,11 @@
-import { Model } from 'sistemium-data'
-import { BaseItem, ContextType, NormalizeItem } from './types'
 import log from 'sistemium-debug'
 import lo from 'lodash'
 import { mapSeries } from 'async'
+import type { BaseItem, ContextType, KoaModel } from './types'
 
 const { debug } = log('rest:POST')
 
-export default function(model: Model & { normalizeItem: NormalizeItem, mergeBy?: string[] }) {
+export default function(model: KoaModel) {
   return async (ctx: ContextType) => {
 
     const {
@@ -27,7 +26,8 @@ export default function(model: Model & { normalizeItem: NormalizeItem, mergeBy?:
     debug('POST', path, data.length, 'records', creatorAuthId, options)
 
     const $in = await model.merge(normalized, options) as unknown as string[]
-    const merged = await findMerged()
+    const foundMerged = await findMerged()
+    const merged = foundMerged.map(item => model.normalizeItem(item))
 
     ctx.body = isArray ? merged : lo.first(merged)
 
@@ -46,7 +46,7 @@ export default function(model: Model & { normalizeItem: NormalizeItem, mergeBy?:
 
 }
 
-function mergeById(model: Model & { mergeBy?: string[] }): boolean {
+function mergeById(model: KoaModel): boolean {
   const { mergeBy } = model
   return !mergeBy
     || (mergeBy.length === 1 && mergeBy[0] === model.idProperty)
