@@ -3,6 +3,7 @@ import log from 'sistemium-debug'
 import getOne from './getOne'
 import getMany from './getMany'
 import postAny from './postAny'
+import patchOne from './patchOne'
 import type { KoaModel } from './types'
 
 const { debug } = log('rest:defaultRoutes')
@@ -15,5 +16,6 @@ export default function(router: Router, models: KoaModel[]) {
     router.put(`/${collection}/:id?`, postAny(model))
     router.get(`/${collection}/:id`, getOne(model))
     router.get(`/${collection}`, getMany(model))
+    router.patch(`/${collection}/:id`, patchOne(model))
   })
 }
