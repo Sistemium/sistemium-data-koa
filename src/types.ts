@@ -16,7 +16,7 @@ export interface KoaModel extends Model {
   rolesFilter?: RolesFilter
   mergeBy?: string[]
 
-  aggregate(pipeline?: any[]): Promise<object[]>
-  aggregate(pipeline?: any[], fullResponseOptions?: BaseItem & { [FULL_RESPONSE_OPTION]: true }): Promise<IFullResponse>
-  aggregate(pipeline?: any[], options?: BaseItem): Promise<object[]>
+  aggregate(pipeline?: BaseItem[]): Promise<BaseItem[]>
+  aggregate(pipeline?: BaseItem[], fullResponseOptions?: BaseItem & { [FULL_RESPONSE_OPTION]: true }): Promise<IFullResponse>
+  aggregate(pipeline?: BaseItem[], options?: BaseItem): Promise<BaseItem[]>
 }
