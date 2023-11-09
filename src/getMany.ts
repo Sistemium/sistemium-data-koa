@@ -43,21 +43,16 @@ export default function(model: KoaModel) {
       pipeline.push(...filterOfRoles)
     }
 
-    const options = {
+    const {
+      data,
+      headers,
+    } = await model.aggregate(pipeline, {
       headers: {
         ...ctx.headers,
         [PAGE_SIZE_HEADER]: pageSize,
       },
       [FULL_RESPONSE_OPTION]: true,
-    }
-
-    const {
-      data,
-      headers,
-    } = await model.aggregate(pipeline, options) as unknown as {
-      data: Object[]
-      headers: Record<string, any>
-    }
+    })
 
     const newOffset = headers[OFFSET_HEADER]
 
