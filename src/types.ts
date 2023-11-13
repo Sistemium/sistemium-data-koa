@@ -24,5 +24,7 @@ export interface KoaModel extends Model {
 
 export interface KoaModelController<T = BaseItem, RT = BaseItem> {
   normalizeItem?(item: T): RT
+  normalizeItemRead?(item: T): RT
+  normalizeItemWrite?(item: T, defaults?: T, overwrites?: T): RT
   getPipeline?(ctx: ContextType) : BaseItem[]
 }
