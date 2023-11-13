@@ -1,6 +1,7 @@
 import log from 'sistemium-debug'
 import { Model } from 'sistemium-data'
-import { BaseItem, ContextType, KoaModel } from './types'
+import { BaseItem, ContextType, KoaModel, KoaModelController } from './types'
+import { authorizedFindOne } from './getOne'
 
 const { debug } = log('rest:DELETE')
 
@@ -17,7 +18,9 @@ async function archiveCreate(archive: Model, data: BaseItem, id: string, name: s
   return archive.merge([{ id, name, data, creatorAuthId }])
 }
 
-export default function(model: KoaModel, archiveModel?: Model) {
+const normalizeItemRead = (item: any) => item
+
+export default function(model: KoaModel, controller: KoaModelController = {}, archiveModel?: Model) {
 
   return async (ctx: ContextType) => {
 
@@ -30,7 +33,10 @@ export default function(model: KoaModel, archiveModel?: Model) {
 
     debug('DELETE', path)
 
-    const data = await model.findOne(filter)
+    const data = await authorizedFindOne(model, id, ctx, {
+      ...controller,
+      normalizeItemRead,
+    })
 
     ctx.assert(data, 404)
 

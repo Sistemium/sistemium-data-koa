@@ -1,13 +1,10 @@
 import log from 'sistemium-debug'
-import type { ContextType, KoaModel } from './types'
+import type { BaseItem, ContextType, KoaModel } from './types'
 import { KoaModelController } from './types'
 
 const { debug } = log('rest:GET')
 
 export default function(model: KoaModel, controller?: KoaModelController) {
-
-  const normalizeItem = controller?.normalizeItem || model.normalizeItem
-
   return async (ctx: ContextType) => {
 
     const {
@@ -17,23 +14,31 @@ export default function(model: KoaModel, controller?: KoaModelController) {
 
     debug(path, id)
 
-    const rolesFilter = ctx.state.rolesFilter || model.rolesFilter?.call(model, ctx.state)
-    const pipe = [{ $match: { id } }]
-    if (Array.isArray(rolesFilter)) {
-      pipe.push(...rolesFilter)
-    } else if (rolesFilter) {
-      Object.assign(pipe[0].$match, rolesFilter)
-    }
-
-    if (controller?.getPipeline) {
-      (pipe as object[]).push(...controller.getPipeline(ctx))
-    }
-
-    const [result] = await model.aggregate(pipe)
+    const result = await authorizedFindOne(model, id, ctx, controller)
 
     ctx.assert(result, 404)
-    ctx.body = normalizeItem.call(model, result)
+    ctx.body = result
 
   }
+}
 
+export async function authorizedFindOne(model: KoaModel, id: string, ctx: ContextType, controller?: KoaModelController): Promise<BaseItem | undefined> {
+  const rolesFilter = ctx.state.rolesFilter || model.rolesFilter?.call(model, ctx.state)
+  const pipe = [{ $match: { [model.idProperty]: id } }]
+  const normalizeItem = controller?.normalizeItemRead
+    || controller?.normalizeItem
+    || model.normalizeItem
+
+  if (Array.isArray(rolesFilter)) {
+    pipe.push(...rolesFilter)
+  } else if (rolesFilter) {
+    Object.assign(pipe[0].$match, rolesFilter)
+  }
+
+  if (controller?.getPipeline) {
+    (pipe as object[]).push(...controller.getPipeline(ctx))
+  }
+
+  const [result] = await model.aggregate(pipe)
+  return result && normalizeItem.call(model, result)
 }
