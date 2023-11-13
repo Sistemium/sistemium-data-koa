@@ -1,9 +1,12 @@
 import log from 'sistemium-debug'
 import type { ContextType, KoaModel } from './types'
+import { KoaModelController } from './types'
 
 const { debug } = log('rest:GET')
 
-export default function(model: KoaModel) {
+export default function(model: KoaModel, controller?: KoaModelController) {
+
+  const normalizeItem = controller?.normalizeItem || model.normalizeItem
 
   return async (ctx: ContextType) => {
 
@@ -21,10 +24,15 @@ export default function(model: KoaModel) {
     } else if (rolesFilter) {
       Object.assign(pipe[0].$match, rolesFilter)
     }
+
+    if (controller?.getPipeline) {
+      (pipe as object[]).push(...controller.getPipeline(ctx))
+    }
+
     const [result] = await model.aggregate(pipe)
 
     ctx.assert(result, 404)
-    ctx.body = model.normalizeItem(result)
+    ctx.body = normalizeItem.call(model, result)
 
   }
 

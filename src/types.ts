@@ -20,3 +20,9 @@ export interface KoaModel extends Model {
   aggregate(pipeline?: BaseItem[], fullResponseOptions?: BaseItem & { [FULL_RESPONSE_OPTION]: true }): Promise<IFullResponse>
   aggregate(pipeline?: BaseItem[], options?: BaseItem): Promise<BaseItem[]>
 }
+
+
+export interface KoaModelController<T = BaseItem, RT = BaseItem> {
+  normalizeItem?(item: T): RT
+  getPipeline?(ctx: ContextType) : BaseItem[]
+}

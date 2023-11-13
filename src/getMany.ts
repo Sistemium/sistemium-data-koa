@@ -3,12 +3,15 @@ import { FULL_RESPONSE_OPTION, OFFSET_HEADER, PAGE_SIZE_HEADER } from 'sistemium
 import qs from 'qs'
 import lo from 'lodash'
 import { queryToFilter, whereToFilter } from './predicates'
-import type { ContextType, KoaModel } from './types'
+import type { ContextType, KoaModel, KoaModelController } from './types'
 
 const { debug } = log('rest:GET')
 export const WHERE_KEY = 'where:'
 
-export default function(model: KoaModel) {
+export default function(model: KoaModel, controller?: KoaModelController) {
+
+  const normalizeItem = controller?.normalizeItem || model.normalizeItem
+
   return async (ctx: ContextType) => {
 
     const {
@@ -37,9 +40,13 @@ export default function(model: KoaModel) {
     ]) as Object[]
 
     debug('GET', path, allFilters)
-    const pipeline = allFilters.map($match => ({ $match }))
+    const pipeline: object[] = allFilters.map($match => ({ $match }))
     if (pipeFilter) {
       pipeline.push(...rolesFilter)
+    }
+
+    if (controller?.getPipeline) {
+      pipeline.push(...controller.getPipeline(ctx))
     }
 
     const {
@@ -65,7 +72,7 @@ export default function(model: KoaModel) {
     if (!data.length) {
       ctx.status = 204
     } else {
-      ctx.body = lo.map(data, item => model.normalizeItem(item))
+      ctx.body = lo.map(data, item => normalizeItem.call(model, item))
     }
 
   }
