@@ -20,11 +20,11 @@ export default function(router: Router, models: KoaModel[], ModelClass?: typeof 
     const { collection } = model
     const controller = controllers && controllers[collection]
     debug(collection, !!controller)
-    router.post(`/${collection}/:id?`, postAny(model))
-    router.put(`/${collection}/:id?`, postAny(model))
+    router.post(`/${collection}/:id?`, postAny(model, controller))
+    router.put(`/${collection}/:id?`, postAny(model, controller))
     router.get(`/${collection}/:id`, getOne(model, controller))
     router.get(`/${collection}`, getMany(model, controller))
-    router.delete(`/${collection}/:id`, deleteOne(model, Archive))
-    router.patch(`/${collection}/:id`, patchOne(model))
+    router.patch(`/${collection}/:id`, patchOne(model, controller))
+    router.delete(`/${collection}/:id`, deleteOne(model, controller, Archive))
   })
 }

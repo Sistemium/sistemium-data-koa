@@ -10,7 +10,9 @@ export const WHERE_KEY = 'where:'
 
 export default function(model: KoaModel, controller?: KoaModelController) {
 
-  const normalizeItem = controller?.normalizeItem || model.normalizeItem
+  const normalizeItem = controller?.normalizeItemRead
+    || controller?.normalizeItem
+    || model.normalizeItem
 
   return async (ctx: ContextType) => {
 
