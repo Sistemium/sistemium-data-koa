@@ -21,7 +21,7 @@ export default function(model: KoaModel, controller?: KoaModelController) {
     } = ctx
 
     const query = qs.parse(ctx.query as unknown as string)
-    const pageSize = queryOrHeader(ctx, PAGE_SIZE_HEADER) || '10'
+    const pageSize = parseInt(queryOrHeader(ctx, PAGE_SIZE_HEADER) || '10', 10)
     const offset = queryOrHeader(ctx, OFFSET_HEADER) as string
     const filters = queryToFilter(query, model.schema)
     const where = query[WHERE_KEY]
@@ -55,11 +55,11 @@ export default function(model: KoaModel, controller?: KoaModelController) {
       data,
       headers,
     } = await model.aggregate(pipeline, {
+      [FULL_RESPONSE_OPTION]: true,
       headers: {
         ...ctx.headers,
         [PAGE_SIZE_HEADER]: pageSize,
       },
-      [FULL_RESPONSE_OPTION]: true,
     })
 
     const newOffset = headers[OFFSET_HEADER]
@@ -81,5 +81,5 @@ export default function(model: KoaModel, controller?: KoaModelController) {
 }
 
 function queryOrHeader(ctx: ContextType, headerName: string) {
-  return ctx.query[`${headerName}:`] || ctx.header[headerName]
+  return (ctx.query[`${headerName}:`] || ctx.header[headerName]) as string
 }
