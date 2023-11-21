@@ -14,7 +14,7 @@ const { debug } = log('rest:defaultRoutes')
  * Populate REST API methods for all models.
  * Optional ModelClass is to define Archive collection.
  */
-export default function(router: Router, models: KoaModel[], ModelClass?: typeof Model, controllers?: Record<string, KoaModelController>) {
+export default function(router: Router, models: KoaModel[], ModelClass?: typeof Model<any>, controllers?: Record<string, KoaModelController>) {
   const Archive = ModelClass && new ModelClass(archiveConfig)
   models.forEach(model => {
     const { collection } = model
