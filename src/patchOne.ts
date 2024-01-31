@@ -28,7 +28,7 @@ export default function(model: KoaModel, controller?: KoaModelController) {
     ctx.assert(item, 404)
 
     const props = {
-      ...normalizeItemWrite.call(model, body),
+      ...normalizeItemWrite.call(model, body, item),
       [model.idProperty]: id,
     }
 
@@ -37,7 +37,7 @@ export default function(model: KoaModel, controller?: KoaModelController) {
     const result = await authorizedFindOne(model, id, ctx, controller)
 
     if (!result) {
-      ctx.status = 310
+      ctx.status = 410
     }
 
     ctx.body = result || ''
