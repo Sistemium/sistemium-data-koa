@@ -35,8 +35,8 @@
     "lodash": "^4.17.21",
     "prettier": "^3.0.3",
     "qs": "^6.11.2",
-    "sistemium-data": "^1.11.3",
-    "sistemium-debug": "^1.1.2",
+    "sistemium-data": "^1.11.9",
+    "sistemium-debug": "^1.1.3",
     "uuid": "^9.0.1"
   }
 }
