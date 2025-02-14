@@ -62,6 +62,7 @@ export default function(model: KoaModel, controller?: KoaModelController) {
       },
     })
 
+    ctx.set(OFFSET_HEADER, offset)
     const newOffset = headers[OFFSET_HEADER]
 
     if (offset && newOffset) {
