@@ -62,7 +62,7 @@ export default function(model: KoaModel, controller?: KoaModelController) {
       },
     })
 
-    ctx.set(OFFSET_HEADER, offset)
+    ctx.set(PAGE_SIZE_HEADER, String(pageSize))
     const newOffset = headers[OFFSET_HEADER]
 
     if (offset && newOffset) {
