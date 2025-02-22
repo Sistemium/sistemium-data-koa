@@ -5,7 +5,7 @@ import type { BaseItem, ContextType, KoaModel, KoaModelController } from './type
 
 const { debug } = log('rest:POST')
 
-export default function(model: KoaModel, controller?: KoaModelController) {
+export default function<T extends BaseItem = BaseItem>(model: KoaModel<T>, controller?: KoaModelController<T>) {
 
   const normalizeItemRead = controller?.normalizeItemRead
     || controller?.normalizeItem
@@ -28,8 +28,8 @@ export default function(model: KoaModel, controller?: KoaModelController) {
 
     ctx.assert(!isArray || !id, 400, 'Can not post array with id')
 
-    const { authId: creatorAuthId } = account || {}
-    const data: BaseItem[] = isArray ? body : [id ? { ...(body as any[]), id } : body]
+    const creatorAuthId: string | undefined = account?.authId
+    const data: Partial<T>[] = isArray ? body : [id ? { ...(body as any[]), id } : body]
     const normalized = data.map(item => normalizeItemWrite.call(model, item, {}, { creatorAuthId }))
 
     debug('POST', path, data.length, 'records', creatorAuthId, options)
@@ -55,7 +55,7 @@ export default function(model: KoaModel, controller?: KoaModelController) {
 
 }
 
-function mergeById(model: KoaModel): boolean {
+function mergeById<T extends BaseItem = BaseItem>(model: KoaModel<T>): boolean {
   const { mergeBy } = model
   return !mergeBy
     || (mergeBy.length === 1 && mergeBy[0] === model.idProperty)

@@ -2,10 +2,11 @@ import lo from 'lodash'
 import log from 'sistemium-debug'
 import { ContextType, KoaModel, KoaModelController } from './types'
 import { authorizedFindOne } from './getOne'
+import { BaseItem } from 'sistemium-data'
 
 const { debug } = log('rest:PATCH')
 
-export default function(model: KoaModel, controller?: KoaModelController) {
+export default function<T extends BaseItem = BaseItem>(model: KoaModel<T>, controller?: KoaModelController<T>) {
 
   const normalizeItemWrite = controller?.normalizeItemWrite
     || controller?.normalizeItem
@@ -20,15 +21,16 @@ export default function(model: KoaModel, controller?: KoaModelController) {
     } = ctx
 
     ctx.assert(lo.isObject(body), 410, 'PATCH body must be object')
+    const data = body as Partial<T>
 
-    debug('PATCH', path, id, body)
+    debug('PATCH', path, id, data)
 
-    const item = await authorizedFindOne(model, id, ctx, controller)
+    const item = await authorizedFindOne<T>(model, id, ctx, controller)
 
     ctx.assert(item, 404)
 
     const props = {
-      ...normalizeItemWrite.call(model, body, item),
+      ...normalizeItemWrite.call(model, data, item),
       [model.idProperty]: id,
     }
 

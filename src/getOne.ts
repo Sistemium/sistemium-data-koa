@@ -22,7 +22,7 @@ export default function(model: KoaModel, controller?: KoaModelController) {
   }
 }
 
-export async function authorizedFindOne(model: KoaModel, id: string, ctx: ContextType, controller?: KoaModelController): Promise<BaseItem | undefined> {
+export async function authorizedFindOne<T extends BaseItem = BaseItem>(model: KoaModel<T>, id: string, ctx: ContextType, controller?: KoaModelController<T>): Promise<T | undefined> {
   const rolesFilter = ctx.state.rolesFilter || model.rolesFilter?.call(model, ctx.state)
   const pipe = [{ $match: { [model.idProperty]: id } }]
   const normalizeItem = controller?.normalizeItemRead
@@ -36,7 +36,7 @@ export async function authorizedFindOne(model: KoaModel, id: string, ctx: Contex
   }
 
   if (controller?.getPipeline) {
-    (pipe as object[]).push(...controller.getPipeline(ctx))
+    (pipe as BaseItem[]).push(...controller.getPipeline(ctx))
   }
 
   const [result] = await model.aggregate(pipe)

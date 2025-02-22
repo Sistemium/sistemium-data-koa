@@ -1,5 +1,5 @@
 import log from 'sistemium-debug'
-import { FULL_RESPONSE_OPTION, OFFSET_HEADER, PAGE_SIZE_HEADER } from 'sistemium-data'
+import { BaseItem, FULL_RESPONSE_OPTION, OFFSET_HEADER, PAGE_SIZE_HEADER } from 'sistemium-data'
 import qs from 'qs'
 import lo from 'lodash'
 import { queryToFilter, whereToFilter } from './predicates'
@@ -8,7 +8,7 @@ import type { ContextType, KoaModel, KoaModelController } from './types'
 const { debug } = log('rest:GET')
 export const WHERE_KEY = 'where:'
 
-export default function(model: KoaModel, controller?: KoaModelController) {
+export default function<T extends BaseItem = BaseItem>(model: KoaModel<T>, controller?: KoaModelController<T>) {
 
   const normalizeItem = controller?.normalizeItemRead
     || controller?.normalizeItem
@@ -39,10 +39,10 @@ export default function(model: KoaModel, controller?: KoaModelController) {
       !pipeFilter && rolesFilter,
       Object.keys(filters).length && filters,
       // ...(ctx.state.filters || []),
-    ]) as Object[]
+    ]) as BaseItem[]
 
     debug('GET', path, allFilters)
-    const pipeline: object[] = allFilters.map($match => ({ $match }))
+    const pipeline: BaseItem[] = allFilters.map($match => ({ $match }))
     if (pipeFilter) {
       pipeline.push(...rolesFilter)
     }
