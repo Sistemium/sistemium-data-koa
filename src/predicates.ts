@@ -63,10 +63,27 @@ export function queryToFilter(query?: Record<string, any>, schema: Record<string
       const [field] = name.match(/^[^.]+/) || [];
       return field && schema[field];
     });
-  return lo.mapValues(lo.pick(query, queryKeys), x => {
+
+  return lo.mapValues(lo.pick(query, queryKeys), (x, key) => {
     if (Array.isArray(x)) {
-      return { $in: x };
+      return { $in: x }
     }
-    return x || null;
-  });
+    if (schema[key] === Date) {
+      return asDate(x)
+    }
+    return x || null
+  })
+}
+
+function asDate(value: string | Date | Record<string, string | Date>): any {
+  if (!value) {
+    return null
+  }
+  if (typeof value === 'string') {
+    return new Date(value)
+  }
+  if (lo.isObject(value)) {
+    return lo.mapValues(value, asDate)
+  }
+  return value
 }
