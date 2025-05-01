@@ -12,7 +12,7 @@ export default function(model: KoaModel, controller?: KoaModelController) {
       path,
     } = ctx
 
-    debug(path, id)
+    debug('GET', path, id)
 
     const result = await authorizedFindOne(model, id, ctx, controller)
 

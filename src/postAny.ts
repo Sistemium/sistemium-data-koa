@@ -1,5 +1,5 @@
 import log from 'sistemium-debug'
-import lo from 'lodash'
+import lo, { omit } from 'lodash'
 import { mapSeries } from 'async'
 import type { BaseItem, ContextType, KoaModel, KoaModelController } from './types'
 
@@ -32,7 +32,7 @@ export default function<T extends BaseItem = BaseItem>(model: KoaModel<T>, contr
     const data: Partial<T>[] = isArray ? body : [id ? { ...(body as any[]), id } : body]
     const normalized = data.map(item => normalizeItemWrite.call(model, item, {}, { creatorAuthId }))
 
-    debug('POST', path, data.length, 'records', creatorAuthId, options)
+    debug('POST', path, data.length, 'records', creatorAuthId, omit(options, 'headers'))
 
     const $in = await model.merge(normalized, options) as unknown as string[]
     const foundMerged = await findMerged()
