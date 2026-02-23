@@ -33,7 +33,7 @@
     "koa-bodyparser": "^4.4.1",
     "koa-morgan": "^1.0.1",
     "lodash": "^4.17.21",
-    "qs": "^6.11.2",
+    "qs": "^6.15.0",
     "sistemium-data": "^1.11.14",
     "sistemium-debug": "^1.1.3",
     "uuid": "^9.0.1"

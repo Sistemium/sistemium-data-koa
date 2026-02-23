@@ -20,7 +20,7 @@ export default function<T extends BaseItem = BaseItem>(model: KoaModel<T>, contr
       path,
     } = ctx
 
-    const query = qs.parse(ctx.query as unknown as string)
+    const query = qs.parse(ctx.query as unknown as string, { arrayLimit: 1000 })
     const pageSize = parseInt(queryOrHeader(ctx, PAGE_SIZE_HEADER) || '10', 10)
     const offset = queryOrHeader(ctx, OFFSET_HEADER) as string
     const filters = queryToFilter(query, model.schema)
